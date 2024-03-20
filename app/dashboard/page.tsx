@@ -1,5 +1,11 @@
+import Image from "next/image"
+import { ThemeToggle } from "../components/ThemeToggle"
+
+ThemeToggle
 export default function DashboardPage(){
     return(
-        <div>Hello word from dadshboard</div>
+        <section className="flex">
+            
+        </section>
     )
 }

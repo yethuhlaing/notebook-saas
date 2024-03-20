@@ -13,7 +13,7 @@ export async function Navbar() {
             <h1 className="font-bold text-3xl">Noteworthy</h1>
           </Link>
           <div className="flex items-center gap-x-5">
-            <ThemeToggle />
+            <ThemeToggle /> 
             { await isAuthenticated() ? 
               (
                 <LogoutLink>
