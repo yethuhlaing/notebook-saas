@@ -1,12 +1,13 @@
-import { Button } from "../../../components/ui/button";
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
 } from "../../../components/ui/card";
 import { CheckCircle2 } from "lucide-react";
+import prisma from "../../lib/db";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getStripeSession } from "../../lib/stripe";
+import { redirect } from "next/navigation";
+import { StripeSubscriptionCreationButton } from "../../components/SubmitButton";
 
 
 const featureItems = [
@@ -17,8 +18,51 @@ const featureItems = [
     { name: "Lorem Ipsum something" },
 ];
 
+async function getData(userId: string) {
+    const data = await prisma.subscription.findUnique({
+        where: {
+            userId: userId,
+        },
+        select: {
+            status: true,
+            user: {
+                select: {
+                    stripeCustomerId: true,
+                },
+            },
+        },
+    });
 
-export default function BillingPage(){
+    return data;
+}
+
+export default async function BillingPage(){
+    const { getUser } = getKindeServerSession()
+    const user = await getUser()
+    const data = await getData(user?.id as string)
+
+    async function createSubscription(){
+        "use server";
+
+        const dbUser = await prisma.user.findUnique({
+            where: {
+                id: user?.id,
+            },
+            select: {
+                stripeCustomerId: true,
+            },
+        });
+
+        if (!dbUser?.stripeCustomerId) {
+            throw new Error("Unable to get customer id");
+        }
+        const subscriptionUrl = await getStripeSession({
+            customerId: dbUser.stripeCustomerId,
+            domainUrl: 'http://localhost:3000',
+            priceId: process.env.STRIPE_PRICE_ID as string,
+        })
+        return redirect(subscriptionUrl);
+    }
     return (
         <div className="max-w-md mx-auto space-y-4">
             <Card className="flex flex-col">
@@ -30,7 +74,7 @@ export default function BillingPage(){
                     </div>
 
                     <div className="mt-4 flex items-baseline text-6xl font-extrabold">
-                        $30 <span className="ml-1 text-2xl text-muted-foreground">/mo</span>
+                        $30 <span className="ml-1 text-2xl text-muted-foreground">/month</span>
                     </div>
                     <p className="mt-5 text-lg text-muted-foreground">
                         Write as many notes as you want for $30 a Month
@@ -47,6 +91,9 @@ export default function BillingPage(){
                             </li>
                         ))}
                     </ul>
+                    <form className="w-full" action={createSubscription}>
+                        <StripeSubscriptionCreationButton />
+                    </form>
                 </div>
             </Card>
         </div>

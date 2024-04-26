@@ -18,7 +18,7 @@ async function getData({ email, id, firstName, lastName, profileImage, }:{
         },
         select: {
             id: true,
-            stripeCustomerID: true,
+            stripeCustomerId: true,
         }
     })
     if (!user) {
@@ -31,7 +31,7 @@ async function getData({ email, id, firstName, lastName, profileImage, }:{
             }
         })
     }
-    if (!user?.stripeCustomerID) {
+    if (!user?.stripeCustomerId) {
         const data = await stripe.customers.create( {
             email: email,
         })
@@ -40,7 +40,7 @@ async function getData({ email, id, firstName, lastName, profileImage, }:{
                 id: id
             },
             data: {
-                stripeCustomerID: data.id
+                stripeCustomerId: data.id
             }
         })
     }
