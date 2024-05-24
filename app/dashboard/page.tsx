@@ -103,7 +103,35 @@ export default async function DashboardPage() {
                 </div>
             ) : (
                 <div className="flex flex-col gap-y-4">
+                    {data?.Notes.map((item) => (
+                        <Card
+                            key={item.id}
+                            className="flex items-center justify-between p-4"
+                        >
+                            <div>
+                                <h2 className="font-semibold text-xl text-primary">
+                                    {item.title}
+                                </h2>
+                                <p>
+                                    {new Intl.DateTimeFormat("en-US", {
+                                        dateStyle: "full",
+                                    }).format(new Date(item.createdAt))}
+                                </p>
+                            </div>
 
+                            <div className="flex gap-x-4">
+                                <Link href={`/dashboard/new/${item.id}`}>
+                                    <Button variant="outline" size="icon">
+                                        <Edit className="w-4 h-4" />
+                                    </Button>
+                                </Link>
+                                <form action={deleteNote}>
+                                    <input type="hidden" name="noteId" value={item.id} />
+                                    <TrashDelete />
+                                </form>
+                            </div>
+                        </Card>
+                    ))}
                 </div>
             )}
         </div>
