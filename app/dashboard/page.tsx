@@ -112,7 +112,7 @@ export default async function DashboardPage() {
                                 <h2 className="font-semibold text-xl text-primary">
                                     {item.title}
                                 </h2>
-                                <p>
+                                <p className="text-sm mt-1">
                                     {new Intl.DateTimeFormat("en-US", {
                                         dateStyle: "full",
                                     }).format(new Date(item.createdAt))}
