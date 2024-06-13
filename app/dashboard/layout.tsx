@@ -25,7 +25,7 @@ async function getData({ email, id, firstName, lastName, profileImage, }:{
     })
     if (!user) {
         const name = `${firstName ?? ''} ${lastName ?? ''}`
-        await prisma.user.create( {
+        await prisma.user.create(  {
             data: {
                 id: id,
                 email: email,
